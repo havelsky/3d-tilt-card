@@ -227,31 +227,35 @@
         });
 
         // General function for interaction handling
-        function handleInteraction(x, y) {
-            const cardRect = card.getBoundingClientRect();
-            const centerX = cardRect.left + cardRect.width / 2;
-            const centerY = cardRect.top + cardRect.height / 2;
+function handleInteraction(x, y) {
+    const cardRect = card.getBoundingClientRect();
+    const centerX = cardRect.left + cardRect.width / 2;
+    const centerY = cardRect.top + cardRect.height / 2;
 
-            const offsetX = x - centerX;
-            const offsetY = y - centerY;
+    const offsetX = x - centerX;
+    const offsetY = y - centerY;
 
-            const rotateX = -offsetY / 10;
-            const rotateY = offsetX / 10;
-            const tiltMagnitude = Math.sqrt(rotateX * rotateX + rotateY * rotateY) / 15;
+    const rotateX = -offsetY / 10;
+    const rotateY = offsetX / 10;
+    const tiltMagnitude = Math.sqrt(rotateX * rotateX + rotateY * rotateY) / 15;
 
-            cardInner.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+    cardInner.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
 
-            // Adjust shimmer lightness based on offset values
-            let lightness = 20 + Math.sqrt(offsetX * offsetX + offsetY * offsetY) / 40; // Make the lightness change more gradually
-            lightness = Math.min(Math.max(lightness, 20), 40); // Clamp value between 30% and 60% lightness
+    // Calculate the gradient center based on offset
+    const gradientX = 50 + (offsetX / cardRect.width) * 50; // Scale to percentage, 50 is the center
+    const gradientY = 50 + (offsetY / cardRect.height) * 50; // Scale to percentage, 50 is the center
 
-            // Update the shimmer background to give a dark to light effect
-            shimmer.style.background = `radial-gradient(circle at 50% 50%, rgba(255, 255, 255, ${lightness / 100}), rgba(255, 255, 255, 0) 80%)`;
+    // Adjust shimmer lightness based on tilt magnitude (more gradual)
+    let lightness = 20 + Math.sqrt(offsetX * offsetX + offsetY * offsetY) / 80; // Gradual increase
+    lightness = Math.min(Math.max(lightness, 20), 35); // Clamp value between 20% and 35% lightness for softer light
 
-            // Adjust opacity
-            shimmer.style.opacity = `${Math.min(tiltMagnitude, 0.5)}`; // Reduce opacity slightly for a softer effect
+    // Update the shimmer background to adjust gradient position
+    shimmer.style.background = `radial-gradient(circle at ${gradientX}% ${gradientY}%, rgba(255, 255, 255, ${lightness / 100}), rgba(255, 255, 255, 0) 80%)`;
 
-            shimmer.style.transform = `translate(${offsetX / 20}px, ${offsetY / 20}px)`;
+    // Adjust opacity for softer shimmer effect
+    shimmer.style.opacity = `${Math.min(tiltMagnitude, 0.4)}`; // Lower max opacity for softer effect
+
+    shimmer.style.transform = `translate(${offsetX / 20}px, ${offsetY / 20}px)`;
         }
     </script>
 </body>
