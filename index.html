@@ -242,8 +242,8 @@
             cardInner.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
 
             // Adjust shimmer lightness based on offset values
-            let lightness = 05 + (offsetX + offsetY) / 05; // Lightness value depends on movement
-            lightness = Math.min(Math.max(lightness, 00), 05); // Clamp value between 20% and 80% lightness
+            let lightness = 10 + (offsetX + offsetY) / 15; // Lightness value depends on movement
+            lightness = Math.min(Math.max(lightness, 10), 20); // Clamp value between 20% and 80% lightness
 
             // Update the shimmer background to give a dark to light effect
             shimmer.style.background = `radial-gradient(circle at 50% 50%, rgba(255, 255, 255, ${lightness / 100}), rgba(255, 255, 255, 0) 80%)`;
