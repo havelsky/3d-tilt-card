@@ -200,19 +200,44 @@
             }
         });
 
-        // Mouse interaction for tilt
-        card.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const rotateX = -((y / rect.height) - 0.5) * 20;
-            const rotateY = ((x / rect.width) - 0.5) * 20;
+        // Mouse drag functionality for tilting
+        let isDragging = false;
+        let startX, startY;
 
-            cardInner.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        card.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            card.style.cursor = 'grabbing';
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                card.style.cursor = 'grab';
+                cardInner.style.transform = 'rotateX(0deg) rotateY(0deg)';
+            }
+        });
+
+        card.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const xOffset = e.clientX - startX;
+                const yOffset = e.clientY - startY;
+
+                const rotateX = (yOffset / window.innerHeight) * 30;  // Limit rotation
+                const rotateY = (xOffset / window.innerWidth) * 30;  // Limit rotation
+
+                cardInner.style.transform = `rotateX(${-rotateX}deg) rotateY(${rotateY}deg)`;
+            }
         });
 
         card.addEventListener('mouseleave', () => {
-            cardInner.style.transform = 'rotateX(0) rotateY(0)';
+            if (isDragging) {
+                isDragging = false;
+                card.style.cursor = 'grab';
+                cardInner.style.transform = 'rotateX(0deg) rotateY(0deg)';
+            }
         });
     </script>
 </body>
