@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Tilt Card with Enhanced Shimmer</title>
+    <title>3D Tilt Card with Slide Effect</title>
     <style>
         html, body {
             height: 100%;
@@ -18,7 +18,7 @@
         }
         .card-container {
             position: absolute;
-            width: 100vw; /* Full width of the viewport */
+            width: 100vw;
             box-sizing: border-box;
             display: flex;
             justify-content: center;
@@ -27,10 +27,10 @@
             margin: 0;
         }
         .card {
-            width: 80vw; /* Default width for responsiveness */
-            max-width: 450px; /* Max width for larger screens like laptops */
+            width: 80vw;
+            max-width: 450px;
             height: auto;
-            max-height: 60vh; /* Reduced height to fit better on laptops */
+            max-height: 60vh;
             perspective: 1000px;
         }
         .card-inner {
@@ -38,7 +38,7 @@
             width: 100%;
             height: 100%;
             transform-style: preserve-3d;
-            transition: transform 1s cubic-bezier(0.25, 0.75, 0.5, 1);
+            transition: transform 0.5s ease-in-out;
         }
         .card-image {
             position: relative;
@@ -49,16 +49,14 @@
             box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
             overflow: hidden;
             background-color: transparent;
-            transform: translateZ(20px);
         }
         .card-image img {
             display: block;
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Maintain aspect ratio */
+            object-fit: cover;
             pointer-events: none;
             user-select: none;
-            background-color: transparent;
         }
         .arrow {
             position: absolute;
@@ -74,51 +72,50 @@
             z-index: 10;
         }
         .arrow-left {
-            left: 10px; /* Adjust positioning */
+            left: 10px;
         }
         .arrow-right {
-            right: 10px; /* Adjust positioning */
+            right: 10px;
         }
-        @keyframes draw-card-left {
+
+        @keyframes slide-out-left {
             0% {
                 transform: translateX(0);
-            }
-            50% {
-                transform: translateX(-120%); /* Move out to the left */
+                opacity: 1;
             }
             100% {
-                transform: translateX(0); /* Reset position */
+                transform: translateX(-120%);
+                opacity: 0;
             }
         }
 
-        @keyframes draw-card-right {
+        @keyframes slide-out-right {
             0% {
                 transform: translateX(0);
-            }
-            50% {
-                transform: translateX(120%); /* Move out to the right */
+                opacity: 1;
             }
             100% {
-                transform: translateX(0); /* Reset position */
+                transform: translateX(120%);
+                opacity: 0;
             }
         }
 
         .slide-left {
-            animation: draw-card-left 0.5s ease-in-out;
+            animation: slide-out-left 0.5s forwards;
         }
 
         .slide-right {
-            animation: draw-card-right 0.5s ease-in-out;
+            animation: slide-out-right 0.5s forwards;
         }
 
         @media (max-width: 768px) {
             .card {
-                width: 95vw; /* Adjust width to almost full viewport for mobile */
-                height: auto; /* Maintain aspect ratio */
-                max-height: 85vh; /* Keep some space at the top and bottom */
+                width: 95vw;
+                height: auto;
+                max-height: 85vh;
             }
             .arrow {
-                font-size: 18px; /* Smaller arrows for mobile */
+                font-size: 18px;
                 padding: 8px;
             }
             .arrow-left {
@@ -128,20 +125,20 @@
                 right: 10px;
             }
             .card-container {
-                top: 50%; /* Centered vertically for mobile */
+                top: 50%;
                 transform: translateY(-50%);
             }
         }
 
         @media (min-width: 769px) {
             .card {
-                width: 50vw; /* Reduce width for laptop/desktop */
-                max-width: 400px; /* Maximum width to ensure it doesn't get too wide */
+                width: 50vw;
+                max-width: 400px;
                 height: auto;
-                max-height: 55vh; /* Further reduce the height to ensure it stays within a comfortable size on laptop */
+                max-height: 55vh;
             }
             .card-container {
-                top: 20%; /* Move it up slightly on larger screens */
+                top: 20%;
                 transform: translateY(-20%);
             }
         }
@@ -160,10 +157,10 @@
         <button class="arrow arrow-right" id="next">&#8250;</button>
     </div>
     <script>
+        const card = document.querySelector('.card');
         const cardInner = document.querySelector('.card-inner');
         const cardImage = document.getElementById('card-image');
 
-        // Hardcoded list of images
         const images = [
             'https://i.imgur.com/FDk1DlF.jpg',
             'https://i.imgur.com/E97xFYc.jpg',
@@ -178,30 +175,44 @@
         // Set initial image
         cardImage.src = images[currentIndex];
 
-        // Arrow navigation
         const nextButton = document.getElementById('next');
         const prevButton = document.getElementById('prev');
 
         nextButton.addEventListener('click', () => {
             if (images.length > 0) {
-                cardInner.classList.add('slide-left'); // Add the animation class
+                cardInner.classList.add('slide-left');
                 setTimeout(() => {
                     currentIndex = (currentIndex + 1) % images.length;
                     cardImage.src = images[currentIndex];
-                    cardInner.classList.remove('slide-left'); // Remove the class after animation
-                }, 500); // Match the animation duration
+                    cardInner.classList.remove('slide-left');
+                }, 500);
             }
         });
 
         prevButton.addEventListener('click', () => {
             if (images.length > 0) {
-                cardInner.classList.add('slide-right'); // Add the animation class
+                cardInner.classList.add('slide-right');
                 setTimeout(() => {
                     currentIndex = (currentIndex - 1 + images.length) % images.length;
                     cardImage.src = images[currentIndex];
-                    cardInner.classList.remove('slide-right'); // Remove the class after animation
-                }, 500); // Match the animation duration
+                    cardInner.classList.remove('slide-right');
+                }, 500);
             }
+        });
+
+        // Mouse interaction for tilt
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const rotateX = -((y / rect.height) - 0.5) * 20;
+            const rotateY = ((x / rect.width) - 0.5) * 20;
+
+            cardInner.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            cardInner.style.transform = 'rotateX(0) rotateY(0)';
         });
     </script>
 </body>
